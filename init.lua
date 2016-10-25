@@ -1,23 +1,25 @@
 local base = mgnm:auto({
 	ln = {
-		offset = 4,
-		scale = 8,
+		offset = -16,
+		scale = 32,
 		seed = 0,
 		spread = {x=350,y=350,z=350},
-		octaves = 5,
+		octaves = 6,
 		persistance = 0.5,
 		lacunarity = 1.5,
+		flags = "absvalue",
 		size = mgnm.mapchunk_size,
 		dims = 2,
 	},
 	bn = {
 		offset = 0,
-		scale = 10,
+		scale = 4,
 		seed = 0,
-		spread = {x=150,y=150,z=150},
-		octaves = 6,
+		spread = {x=50,y=50,z=50},
+		octaves = 3,
 		persistance = 0.5,
 		lacunarity = 2,
+		flags = "eased",
 		size = mgnm.mapchunk_size,
 		dims = 2,
 	},
@@ -28,6 +30,7 @@ local base = mgnm:auto({
 	end,
 	size = mgnm.mapchunk_size,
 	dims = 2,
+	--]]
 })
 
 
