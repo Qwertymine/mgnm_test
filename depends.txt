@@ -1,4 +1,4 @@
 mgnm
-mgmini
-nlnoise
 default
+mgmini?
+nlnoise?
