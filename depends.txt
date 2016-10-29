@@ -1,3 +1,4 @@
 mgnm
+mgmini
 nlnoise
 default
