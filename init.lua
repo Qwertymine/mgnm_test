@@ -1,4 +1,4 @@
-mgmini:minify({x=15,y=3,z=15})
+--mgmini:minify({x=15,y=3,z=15})
 
 local base = mgnm:auto({
 	ln = {
