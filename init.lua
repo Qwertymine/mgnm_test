@@ -62,20 +62,78 @@ local mountains = mgnm:auto({
 		local t = noises.t_noise
 		local limit = noises.height_limit
 		local minp = self.minp
+		local xyz = 1
+		local xz = 1
 		for z=minp.z,minp.z+mgnm.mapchunk_size.z-1 do
 		for y=minp.y,minp.y+mgnm.mapchunk_size.y-1 do
 		for x=minp.x,minp.x+mgnm.mapchunk_size.x-1 do
-			self[self:index(x,y,z)] = t[t:index(x,y,z)] - (y - limit[limit:index(x,z)])
+			self[xyz] = t[xyz] - (y - limit[xz])
+			xyz = xyz + 1
+			xz = xz + 1
 		end
+			xz = xz - self.size.x
 		end
+			xz = xz + self.size.x
 		end
 	end,
 	size = mgnm.mapchunk_size,
 	dims = 3,
 })
 
+local caves = mgnm:auto{
+	a = nlnoise.normalise{
+		offset = 0,
+		scale = 1,
+		seed = 56,
+		spread = {x=50,y=50,z=50},
+		octaves = 4,
+		persistance = 0.5,
+		lacunarity = 1.5,
+		size = mgnm.mapchunk_size,
+		dims = 3,
+	},
+	b = nlnoise.normalise{
+		offset = 0,
+		scale = 1,
+		seed = 57,
+		spread = {x=50,y=50,z=50},
+		octaves = 4,
+		persistance = 0.5,
+		lacunarity = 1.5,
+		size = mgnm.mapchunk_size,
+		dims = 3,
+	},
+	combiner = function(self, noises)
+		local a = noises.a
+		local b = noises.b
+		local minp = self.minp
+		local min = -0.05
+		local max = 0.05
+		local xyz = 1
+		for z=1,self.size.z do
+		for y=1,self.size.y do
+		for x=1,self.size.x do
+			if a[xyz] > min and a[xyz] < max
+			and b[xyz] > min and b[xyz] < max then
+				self[xyz] = true
+			else
+				self[xyz] = false
+			end
+			if a[xyz] > 1 or b[xyz] > 1 then
+				self[xyz] = false
+			end
+			xyz = xyz + 1
+		end
+		end
+		end
+	end,
+	size = mgnm.mapchunk_size,
+	dims = 3,
+}
+
 
 local stone = minetest.get_content_id("default:stone")
+local desert_stone = minetest.get_content_id("default:desert_stone")
 local sand = minetest.get_content_id("default:sand")
 local water = minetest.get_content_id("default:water_source")
 
@@ -86,23 +144,36 @@ minetest.register_on_generated(function(minp,maxp,seed)
 
 	base:init(minp)
 	mountains:init(minp)
+	caves:init(minp)
+
+	local xyz = 1
+	local xz = 1
 
 	for z=minp.z,maxp.z do
 	for y=minp.y,maxp.y do
 	for x=minp.x,maxp.x do
-		if y < base[base:index(x,z)] then
+		local vmi = v:index(x,y,z)
+		if caves[xyz] then
+			-- v.data[vmi] = air
+		elseif y < base[xz] then
 			if y < 2 then
-				v.data[v:index(x,y,z)] = sand
+				v.data[vmi] = sand
 			else
-				v.data[v:index(x,y,z)] = stone
+				v.data[vmi] = stone
 			end
 		elseif mountains:get(x,y,z) > 0 then
-			v.data[v:index(x,y,z)] = sand
+			v.data[vmi] = desert_stone
 		elseif y < 0 then
-			v.data[v:index(x,y,z)] = water
+			v.data[vmi] = water
+		--else
+		--	v.data[vmi] = air
 		end
+		xyz = xyz + 1
+		xz = xz + 1
 	end
+		xz = xz - base.size.x
 	end
+		xz = xz + base.size.x
 	end
 
 	v:set_data()
