@@ -1,4 +1,4 @@
---mgmini:minify({x=5,y=3,z=5})
+mgmini:minify({x=5,y=3,z=5})
 
 local base = mgnm:auto({
 	ln = {
@@ -57,6 +57,7 @@ local mountains = mgnm:auto({
 		lacunarity = 1.5,
 		size = mgnm.mapchunk_size,
 		dims = 3,
+		mgmini_scale_values = true,
 	},
 	combiner = function(self, noises)
 		local t = noises.t_noise
